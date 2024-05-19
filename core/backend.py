@@ -10,27 +10,20 @@ from datetime import datetime
 
 bot = ChatBot('My Chatbot',
               logic_adapters=[
-                    {
-                        'import_path': 'core.train.price.price_min_max.MyLogicAdapter',
-                    },
-                    {
-                        'import_path': 'core.train.price.price_of_res.MyLogicAdapter',
-                    },
-                    {
-                        'import_path': 'core.train.price.price.MyLogicAdapter',
-                    },
-                    {
-                        'import_path': 'core.train.name_res.by_like.MyLogicAdapter',
-                    },
-                    {
-                        'import_path': 'core.train.name_res.by_time.MyLogicAdapter',
-                    },
-                    {
-                        'import_path': 'core.train.name_dish.by_res.MyLogicAdapter',
-                    },
-                    {
-                        'import_path': 'core.train.name_res.by_dish.MyLogicAdapter',
-                    },
+                    {'import_path': 'core.train.price.price_min_max.MyLogicAdapter',},
+                    {'import_path': 'core.train.price.price_of_res.MyLogicAdapter',},
+                    {'import_path': 'core.train.price.price.MyLogicAdapter',},
+                    {'import_path': 'core.train.name_res.by_like.MyLogicAdapter',},
+                    {'import_path': 'core.train.name_res.by_time.MyLogicAdapter',},
+                    {'import_path': 'core.train.name_dish.by_res.MyLogicAdapter',},
+                    {'import_path': 'core.train.name_res.by_dish.MyLogicAdapter',},
+                    {'import_path': 'core.train.contact.address.MyLogicAdapter',},
+                    {'import_path': 'core.train.contact.email.MyLogicAdapter',},
+                    {'import_path': 'core.train.contact.phone.MyLogicAdapter',},
+                    {'import_path': 'core.train.infor_dish.description.MyLogicAdapter',},
+                    {'import_path': 'core.train.infor_res.description.MyLogicAdapter',},
+                    {'import_path': 'core.train.infor_res.time.MyLogicAdapter',},
+                    {'import_path': 'core.train.infor_res.table.MyLogicAdapter',},
                     {
                         'import_path': 'chatterbot.logic.BestMatch',
                         'default_response': 'I am sorry, but I do not understand.',
@@ -83,6 +76,3 @@ def list_chatbot(request, *args, **kwargs):
                 chats.append(data_col)
         return Response({'success': True, 'data': chats}, status=status.HTTP_202_ACCEPTED)
     except Exception as e: return Response({'success': False, 'data': str(e)}, status=status.HTTP_404_NOT_FOUND)
-
-
-    

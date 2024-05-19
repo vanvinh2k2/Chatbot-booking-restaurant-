@@ -3,6 +3,7 @@ from chatterbot.conversation import Statement
 from core.logic.search_word import search_word
 from core.logic.object_recognition import getName, getRole
 from core.logic.customer_word import remove_stopwords
+from core.logic.restaurant import get_restaurant_with_id_title
 
 class MyLogicAdapter(LogicAdapter):
     def __init__(self, chatbot, **kwargs):
@@ -59,7 +60,7 @@ class MyLogicAdapter(LogicAdapter):
 
     def process(self, input_statement, additional_response_selection_parameters):
         name_dish = ""
-        confidence = 0.93
+        confidence = 0.96
         if len(getName(str(input_statement))) > 0:
             for name in getName(str(input_statement)):
                 if(getRole(name, str(input_statement)) == False):
@@ -68,9 +69,65 @@ class MyLogicAdapter(LogicAdapter):
         
         if(name_dish == ""): selected_statement = Statement("Please tell me the dishes name?")
         else: 
-            if self.cate == 0: selected_statement = Statement("List featured Restaurant: 1, 2, .. of dish ")
-            elif self.cate == 1: selected_statement = Statement("Restaurant high: Abc of dish")
-            elif self.cate == 2: selected_statement = Statement("Restaurant low: Xyz of dish")
-            elif self.cate == 3: selected_statement = Statement("List Restaurant: 1, 2, 3, ... of dish")
+            if self.cate == 0:
+                restaurants = get_restaurant_with_id_title(
+                    f"SELECT r.rid, r.title FROM core_restaurant AS r, core_dish AS d WHERE r.rid = d.restaurant_id AND d.title LIKE '%{name_dish}%' AND d.featured = 1"
+                )
+                if(len(restaurants) > 1): 
+                    response = f"Restaurants that have {name_dish} dishes as special dishes: " ;
+                    count = 0
+                    for res in restaurants:
+                        if count != 0: response += ", "
+                        response += res['title']
+                        count += 1 
+                elif len(restaurants) == 1:
+                    response = "Currently there is only restaurant " + restaurants[0]['title']
+                else: response = "No have"
+                selected_statement = Statement(response)
+            elif self.cate == 1: 
+                restaurants = get_restaurant_with_id_title(
+                    f"SELECT r.rid, r.title FROM core_restaurant AS r, core_dish AS d WHERE r.rid = d.restaurant_id AND d.title LIKE '%{name_dish}%' AND d.price = (SELECT MAX(d2.price) FROM core_dish AS d2 WHERE d2.title LIKE '%{name_dish}%')"
+                )
+                if(len(restaurants) > 1): 
+                    response = f"The restaurant is " ;
+                    count = 0
+                    for res in restaurants:
+                        if count != 0: response += ", "
+                        response += res['title']
+                        count += 1 
+                elif len(restaurants) == 1:
+                    response = "The restaurant is " + restaurants[0]['title']
+                else: response = "No have"
+                selected_statement = Statement(response)
+            elif self.cate == 2: 
+                restaurants = get_restaurant_with_id_title(
+                    f"SELECT r.rid, r.title FROM core_restaurant AS r, core_dish AS d WHERE r.rid = d.restaurant_id AND d.title LIKE '%{name_dish}%' AND d.price = (SELECT MIN(d2.price) FROM core_dish AS d2 WHERE d2.title LIKE '%{name_dish}%')"
+                )
+                if(len(restaurants) > 1): 
+                    response = f"The restaurant is " ;
+                    count = 0
+                    for res in restaurants:
+                        if count != 0: response += ", "
+                        response += res['title']
+                        count += 1 
+                elif len(restaurants) == 1:
+                    response = "The restaurant is " + restaurants[0]['title']
+                else: response = "No have"
+                selected_statement = Statement(response)
+            elif self.cate == 3: 
+                restaurants = get_restaurant_with_id_title(
+                    f"SELECT r.rid, r.title FROM core_restaurant AS r, core_dish AS d WHERE r.rid = d.restaurant_id AND d.title LIKE '%{name_dish}%'"
+                )
+                if(len(restaurants) > 1): 
+                    response = f"Restaurants that have {name_dish} dishes: " ;
+                    count = 0
+                    for res in restaurants:
+                        if count != 0: response += ", "
+                        response += res['title']
+                        count += 1 
+                elif len(restaurants) == 1:
+                    response = "Currently there is only restaurant " + restaurants[0]['title']
+                else: response = "No have"
+                selected_statement = Statement(response)
         selected_statement.confidence = confidence
         return selected_statement

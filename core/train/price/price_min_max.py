@@ -50,12 +50,11 @@ class MyLogicAdapter(LogicAdapter):
                     name_dish = name
                 elif(getRole(name, str(input_statement)) == True):
                     name_res = name
-                    
         if name_dish == "": selected_statement = Statement("Please tell me the name of detail dish?")
         else:
             if(name_res == ""): 
-                dishes = get_dish_all(f"SELECT * FROM core_dish WHERE title LIKE '%{name_res}%'")
-                if len(dishes>0):
+                dishes = get_dish_all(f"SELECT * FROM core_dish WHERE title LIKE '%{name_dish}%'")
+                if len(dishes) > 0:
                     n_dish = dishes[0]['title']
                     min_price = 0; max_price = 0
                     for dish in dishes:
@@ -68,8 +67,9 @@ class MyLogicAdapter(LogicAdapter):
                 else: selected_statement = Statement(f"Sorry, There is no such dish {name_dish} on the system.")
             else: 
                 restaurants = get_restaurant_with_id_title(f"SELECT rid, title FROM core_restaurant WHERE title LIKE '%{name_res}%'")
-                # if len(restaurants) > 0:
-                #     dishes = get_dish_all(f"SELECT * FROM core_dish WHERE title LIKE '%{name_res}%' AND ")
+                if len(restaurants) > 0:
+                    pass
+                    # dishes = get_dish_all(f"SELECT d.did, d.title, d.price FROM core_dish AS d, core_restaurant AS r WHERE d.title LIKE '%{name_dish}%' AND d.restaurant_id = r.rid AND r.title LIKE '%{name_res}%'")
                 #     if len(dishes>0):
                 #         n_dish = dishes[0]['title']
                 #         min_price = 0; max_price = 0

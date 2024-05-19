@@ -3,6 +3,7 @@ from chatterbot.conversation import Statement
 from core.logic.object_recognition import getName, getRole
 from core.logic.customer_word import remove_stopwords
 from core.logic.search_word import search_word
+from core.logic.restaurant import get_restaurant_with_id_title
 
 class MyLogicAdapter(LogicAdapter):
     def __init__(self, chatbot, **kwargs):
@@ -39,11 +40,38 @@ class MyLogicAdapter(LogicAdapter):
 
     def process(self, input_statement, additional_response_selection_parameters):
         confidence = 0.9
-        
-        if self.cate == 0: selected_statement = Statement("Restaurant famous")
-        elif self.cate == 1: selected_statement = Statement("Restaurant like high")
-        elif self.cate == 2: selected_statement = Statement("Restaurant like low")
-        elif self.cate == 3: selected_statement = Statement("List restaurant of system")
-
+        if self.cate == 0: 
+            selected_statement = Statement("Restaurant famous")
+        elif self.cate == 1: 
+            restaurants = get_restaurant_with_id_title(
+                f"SELECT rid, title FROM core_restaurant WHERE like = (SELECT MAX(like) FROM core_restaurant)"
+            )
+            if(len(restaurants) > 0):
+                res_name = restaurants[0]['title'] 
+                response = f"It's {res_name} restaurant" ;
+            else: response = "Currently not available"
+            selected_statement = Statement(response)
+        elif self.cate == 2: 
+            restaurants = get_restaurant_with_id_title(
+                f"SELECT rid, title FROM core_restaurant WHERE like = (SELECT MIN(like) FROM core_restaurant)"
+            )
+            if(len(restaurants) > 0):
+                res_name = restaurants[0]['title'] 
+                response = f"It's {res_name} restaurant" ;
+            else: response = "Currently not available"
+            selected_statement = Statement(response)
+        elif self.cate == 3: 
+            restaurants = get_restaurant_with_id_title(
+                f"SELECT rid, title FROM core_restaurant"
+            )
+            if(len(restaurants) > 0):
+                count = 0
+                response = "List restaurant of system: "
+                for res in restaurants:
+                    if count != 0: response += ", "
+                    response += res['title']
+                    count += 1 
+            else: response = "Currently not available"
+            selected_statement = Statement(response)
         selected_statement.confidence = confidence
         return selected_statement

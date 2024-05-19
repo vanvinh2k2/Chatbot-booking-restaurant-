@@ -7,5 +7,5 @@ def synonyms(word):
             synonyms.add(lemma.name())
     return synonyms
 
-# word = "open"
+# word = "address"
 # print(f"Các từ đồng nghĩa với '{word}': {synonyms(word)}")

@@ -89,8 +89,15 @@ DATABASES = {
     }
 }
 
-
-
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'restaurant_booking',
+        'USER' : 'root',
+        'PASSWORD' : '',
+        'HOST' : 'localhost' 
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
